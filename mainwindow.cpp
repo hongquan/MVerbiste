@@ -45,6 +45,7 @@ void MainWindow::setupcodedUI()
     // Clear the word input when Clear button is tapped
     QObject::connect(btnClear, SIGNAL(clicked()), wordinput, SLOT(clear()));
     QObject::connect(btnClear, SIGNAL(clicked()), labVerb, SLOT(clear()));
+    QObject::connect(btnClear, SIGNAL(clicked()), wordinput, SLOT(setFocus()));
 
     QObject::connect(wordinput, SIGNAL(returnPressed()), this, SLOT(startLookup()));
     QObject::connect(btnLookup, SIGNAL(clicked()), this, SLOT(startLookup()));
@@ -107,6 +108,7 @@ void MainWindow::showExpanded()
 #else
     show();
 #endif
+    wordinput->setFocus();
 }
 
 void MainWindow::startLookup()
