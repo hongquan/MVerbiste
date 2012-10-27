@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "gui/conjugation.h"
 
 #include <QtCore/QCoreApplication>
 
@@ -110,28 +111,53 @@ void MainWindow::showExpanded()
 
 void MainWindow::startLookup()
 {
-    const std::set<std::string> *templateSet = NULL;
     QString input = wordinput->text();
-    labVerb->setText(input);
+
     FrenchVerbDictionary::Language lang = FrenchVerbDictionary::parseLanguageCode(langCode);
     if (lang != FrenchVerbDictionary::FRENCH)
     {
-        //wordinput->setText(QString("Fr"));
+        // TODO: If lang code is not supported?
     }
-    /*
-    std::string conjFileName, verbsFileName;
-    FrenchVerbDictionary::getXMLFilenames(conjFileName, verbsFileName, lang);
-    */
-    freVerbDic = new FrenchVerbDictionary(false);
-    const std::string word = input.toUtf8().constData();
-    templateSet = &freVerbDic->getVerbTemplateSet(word);
-    for (std::set<std::string>::const_iterator it = templateSet->begin();
-         it != templateSet->end(); ++it)
-       {
-           const std::string &tname = *it;
 
-           FrenchVerbDictionary::getRadical(word, tname);
-       }
+    /* Create verb dictionary, accept non-accent input */
+    freVerbDic = new FrenchVerbDictionary(true);
+
+    /* Get input word to look up */
+    const std::string word = input.toLower().toUtf8().constData();
+
+    /*
+     *  For each possible deconjugation, take the infinitive form and
+     *  obtain its complete conjugation.
+     */
+    std::vector<InflectionDesc> v;
+    bool includePronouns = FALSE;    // TODO: Will get this value from external
+
+    freVerbDic->deconjugate(word, v);
+
+    std::string prevUTF8Infinitive, prevTemplateName;
+    for (std::vector<InflectionDesc>::const_iterator it = v.begin();
+         it != v.end(); it++)
+    {
+        const InflectionDesc &d = *it;
+        VVVS conjug;
+        getConjugation(freVerbDic, d.infinitive, d.templateName, conjug, includePronouns);
+
+        if (conjug.size() == 0           // if no tenses
+            || conjug[0].size() == 0     // if no infinitive tense
+            || conjug[0][0].size() == 0  // if no person in inf. tense
+            || conjug[0][0][0].empty())  // if infinitive string empty
+        {
+            continue;
+        }
+
+        std::string utf8Infinitive = conjug[0][0][0];
+        if (utf8Infinitive == prevUTF8Infinitive && d.templateName == prevTemplateName)
+            // This result is duplicated
+            continue;
+
+        /* Show on GUI */
+        labVerb->setText(QString::fromUtf8(utf8Infinitive.c_str()));
+    }
 }
 
 void  MainWindow::initverbiste()

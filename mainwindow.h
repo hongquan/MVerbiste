@@ -14,6 +14,7 @@
 #include <vector>
 #include <string.h>
 #include <verbiste/FrenchVerbDictionary.h>
+#include "gui/conjugation.h"
 using namespace verbiste;
 
 namespace Ui {
