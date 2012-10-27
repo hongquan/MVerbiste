@@ -3,6 +3,7 @@
 #include "gui/conjugation.h"
 
 #include <QtCore/QCoreApplication>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -19,13 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::setupcodedUI()
 {
     cent = centralWidget();
-    //mlayout = qobject_cast<QVBoxLayout *>(cent->layout());
     mlayout = new QVBoxLayout;
     btlayout = new QHBoxLayout;
 
-    QScrollArea *scrollArea = new QScrollArea;
-    scrollArea->setBackgroundRole(QPalette::Dark);
-    mlayout->addWidget(scrollArea);
+    resultPages = new QTabWidget;
+    resultPages->setTabPosition(QTabWidget::West);
+    mlayout->addWidget(resultPages);
 
     btnClear = new QPushButton;
     btnClear->setIcon(QIcon("/usr/share/icons/hicolor/64x64/hildon/general_delete.png"));
@@ -43,12 +43,10 @@ void MainWindow::setupcodedUI()
     cent->setLayout(mlayout);
 
     // Clear the word input when Clear button is tapped
-    QObject::connect(btnClear, SIGNAL(clicked()), wordinput, SLOT(clear()));
-    QObject::connect(btnClear, SIGNAL(clicked()), labVerb, SLOT(clear()));
-    QObject::connect(btnClear, SIGNAL(clicked()), wordinput, SLOT(setFocus()));
+    connect(btnClear, SIGNAL(clicked()), this, SLOT(clearResults()));
 
-    QObject::connect(wordinput, SIGNAL(returnPressed()), this, SLOT(startLookup()));
-    QObject::connect(btnLookup, SIGNAL(clicked()), this, SLOT(startLookup()));
+    connect(wordinput, SIGNAL(returnPressed()), this, SLOT(startLookup()));
+    connect(btnLookup, SIGNAL(clicked()), this, SLOT(startLookup()));
 }
 
 MainWindow::~MainWindow()
@@ -111,6 +109,11 @@ void MainWindow::showExpanded()
     wordinput->setFocus();
 }
 
+void  MainWindow::initverbiste()
+{
+    langCode = "fr";
+}
+
 void MainWindow::startLookup()
 {
     QString input = wordinput->text();
@@ -133,6 +136,7 @@ void MainWindow::startLookup()
      */
     std::vector<InflectionDesc> v;
     bool includePronouns = FALSE;    // TODO: Will get this value from external
+    bool isItalian = FALSE;          // TODO: Will get this value from external
 
     freVerbDic->deconjugate(word, v);
 
@@ -158,11 +162,63 @@ void MainWindow::startLookup()
             continue;
 
         /* Show on GUI */
-        labVerb->setText(QString::fromUtf8(utf8Infinitive.c_str()));
+        ResultPage *rsp = addResultPage(utf8Infinitive);
+        //QString infVerb = QString::fromUtf8(utf8Infinitive.c_str());
+        //labVerb->setText(infVerb);
+
+        /* Get modes and tenses of the verb */
+        int i = 0;
+        for (VVVS::const_iterator t = conjug.begin();
+             t != conjug.end(); t++, i++)
+        {
+            if (i == 1)
+                i = 4;
+            else if (i == 11)
+                i = 12;
+            assert(i >= 0 && i < 16);
+
+            int row = i / 4;
+            int col = i % 4;
+            qDebug() << row << col;
+
+            std::string utf8TenseName = getTenseNameForTableCell(row, col, isItalian);
+            if (utf8TenseName.empty())
+                continue;
+
+            qDebug() << utf8TenseName.c_str();
+        }
+
+        prevUTF8Infinitive = utf8Infinitive;
+        prevTemplateName = d.templateName;
     }
 }
 
-void  MainWindow::initverbiste()
+ResultPage* MainWindow::addResultPage(const std::string &labelText)
 {
-    langCode = "fr";
+    ResultPage *rp = new ResultPage();
+    QString label = QString::fromUtf8(labelText.c_str());
+    resultPages->addTab(rp->page, label);
+    return rp;
 }
+
+void MainWindow::clearResults()
+{
+    wordinput->clear();
+    labVerb->clear();
+
+    while (resultPages->count()) {
+        int lastIndex = resultPages->count() - 1;
+        resultPages->widget(lastIndex)->deleteLater();
+        resultPages->removeTab(lastIndex);
+    }
+    wordinput->setFocus();
+}
+
+/**** For ResultPage class ****/
+ResultPage::ResultPage()
+    : page(new QScrollArea),
+      table(new QTableWidget)
+{
+}
+
+

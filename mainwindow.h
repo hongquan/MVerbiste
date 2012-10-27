@@ -8,6 +8,7 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QScrollArea>
 #include <QtGui/QLabel>
+#include <QtGui/QTableWidget>
 
 /* Verbiste */
 #include <iostream>
@@ -19,7 +20,18 @@ using namespace verbiste;
 
 namespace Ui {
     class MainWindow;
+    class ResultPage;
 }
+
+class ResultPage
+{
+public:
+    QScrollArea *page;
+    QTableWidget *table;
+
+    ResultPage();
+    // No destructor because this object does not own the two widgets.
+};
 
 class MainWindow : public QMainWindow
 {
@@ -50,6 +62,7 @@ private:
     Ui::MainWindow *ui;
     QWidget     *cent;               // Central widget
     QVBoxLayout *mlayout;            // Main layout
+    QTabWidget  *resultPages;
     QHBoxLayout *btlayout;           // Layout to pack the functional buttons
     QPushButton *btnClear;           // Clear button
     QLineEdit   *wordinput;          //  Word input
@@ -57,6 +70,12 @@ private:
     QLabel      *labVerb;
     std::string langCode;
     FrenchVerbDictionary *freVerbDic;
+
+    ResultPage* addResultPage(const std::string &labelText);
+
+private slots:
+    void clearResults();
 };
+
 
 #endif // MAINWINDOW_H
