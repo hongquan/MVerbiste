@@ -27,6 +27,8 @@
 
 #include <vector>
 #include <string>
+#include <QVector>
+#include <QString>
 
 typedef std::vector<std::string> VS;
 typedef std::vector<VS> VVS;
@@ -94,5 +96,13 @@ std::string createTableCellText(verbiste::FrenchVerbDictionary &fvd,
                                 const std::string &openMark,
                                 const std::string &closeMark);
 
-
+/**
+ * Qt version of createTableCellText() above.
+ * Return a vertor of QStrings, which are conjugations.
+ **/
+QVector<QString> qgetConjugates(verbiste::FrenchVerbDictionary &fvd,
+                                const VVS &tense,
+                                const std::string &lowerCaseUTF8UserText,
+                                const std::string &openMark,
+                                const std::string &closeMark);
 #endif  /* _H_conjugation */

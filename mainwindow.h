@@ -75,7 +75,6 @@ private:
     QPushButton *btnClear;           // Clear button
     QLineEdit   *wordinput;          //  Word input
     QPushButton *btnLookup;          // Lookup button
-    QLabel      *labVerb;
     std::string langCode;
     FrenchVerbDictionary *freVerbDic;
 
@@ -83,6 +82,7 @@ private:
 
 private slots:
     void clearResults();
+    void startAgain();
 };
 
 

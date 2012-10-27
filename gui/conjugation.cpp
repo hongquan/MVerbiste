@@ -201,3 +201,44 @@ createTableCellText(verbiste::FrenchVerbDictionary &fvd,
     }
     return persons;
 }
+
+
+/**
+ * Qt version of createTableCellText() above.
+ * Return a vertor of QStrings, which are conjugations.
+ **/
+QVector<QString> qgetConjugates(verbiste::FrenchVerbDictionary &fvd,
+                                const VVS &tense,
+                                const string &lowerCaseUTF8UserText,
+                                const string &openMark,
+                                const string &closeMark)
+{
+    string userTextWOAccents = fvd.removeUTF8Accents(lowerCaseUTF8UserText);
+    QVector<QString> persons(0);
+    for (VVS::const_iterator it = tense.begin(); it != tense.end(); it++)
+    {
+        const VS &person = *it;
+        QString ver;
+
+//        if (it != tense.begin())
+//            persons += "\n";
+
+        for (VS::const_iterator i = person.begin(); i != person.end(); i++)
+        {
+            if (i != person.begin())
+                ver.append(", ");
+
+            string inflection = fvd.removeUTF8Accents(removePronoun(*i));
+            if (inflection == userTextWOAccents) {
+                const std::string wrapped = openMark + *i + closeMark;
+                ver.append(QString::fromUtf8(wrapped.c_str()));
+            }
+            else {
+                const char *str = (*i).c_str();
+                ver.append(QString::fromUtf8(str));
+            }
+        }
+        persons.append(ver);
+    }
+    return persons;
+}

@@ -32,10 +32,7 @@ void MainWindow::setupcodedUI()
     btnClear = new QPushButton;
     btnClear->setIcon(QIcon("/usr/share/icons/hicolor/64x64/hildon/general_delete.png"));
     wordinput = new QLineEdit;
-    labVerb = new QLabel();
-    labVerb->setMinimumWidth(250);
     btlayout->addWidget(btnClear);
-    btlayout->addWidget(labVerb);
     btlayout->addWidget(wordinput);
     btnLookup = new QPushButton;  // Lookup button
     btnLookup->setIcon(QIcon("/usr/share/icons/hicolor/64x64/hildon/general_search.png"));
@@ -45,7 +42,7 @@ void MainWindow::setupcodedUI()
     cent->setLayout(mlayout);
 
     // Clear the word input when Clear button is tapped
-    connect(btnClear, SIGNAL(clicked()), this, SLOT(clearResults()));
+    connect(btnClear, SIGNAL(clicked()), this, SLOT(startAgain()));
 
     connect(wordinput, SIGNAL(returnPressed()), this, SLOT(startLookup()));
     connect(btnLookup, SIGNAL(clicked()), this, SLOT(startLookup()));
@@ -119,6 +116,11 @@ void  MainWindow::initverbiste()
 
 void MainWindow::startLookup()
 {
+    btnLookup->setText(tr("Please wait..."));
+    btnLookup->setEnabled(false);
+    clearResults();
+    /* Pending the lookup job to the next event loop (redraw the button right now) */
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     QString input = wordinput->text();
 
     FrenchVerbDictionary::Language lang = FrenchVerbDictionary::parseLanguageCode(langCode);
@@ -137,15 +139,16 @@ void MainWindow::startLookup()
      *  For each possible deconjugation, take the infinitive form and
      *  obtain its complete conjugation.
      */
-    std::vector<InflectionDesc> v;
+    std::vector<InflectionDesc> infles;
     bool includePronouns = FALSE;    // TODO: Will get this value from external
     bool isItalian = FALSE;          // TODO: Will get this value from external
 
-    freVerbDic->deconjugate(word, v);
+    freVerbDic->deconjugate(word, infles);
 
+    resultPages->setUpdatesEnabled(false);
     std::string prevUTF8Infinitive, prevTemplateName;
-    for (std::vector<InflectionDesc>::const_iterator it = v.begin();
-         it != v.end(); it++)
+    for (std::vector<InflectionDesc>::const_iterator it = infles.begin();
+         it != infles.end(); it++)
     {
         const InflectionDesc &d = *it;
         VVVS conjug;
@@ -166,14 +169,11 @@ void MainWindow::startLookup()
 
         /* Show on GUI */
         ResultPage *rsp = addResultPage(utf8Infinitive);
-        //QString infVerb = QString::fromUtf8(utf8Infinitive.c_str());
-        //labVerb->setText(infVerb);
 
         /* Get modes and tenses of the verb */
         int i = 0;
         for (VVVS::const_iterator t = conjug.begin();
-             t != conjug.end(); t++, i++)
-        {
+             t != conjug.end(); t++, i++) {
             if (i == 1)
                 i = 4;
             else if (i == 11)
@@ -187,19 +187,17 @@ void MainWindow::startLookup()
             if (utf8TenseName.empty())
                 continue;
 
-#ifdef DEBUG
-            qDebug() << utf8TenseName.c_str();
-#endif
             QVBoxLayout *cell = makeResultCell(*t, utf8TenseName, word, freVerbDic);
             rsp->grid->addLayout(cell, row, col);
-#ifdef DEBUG
-            qDebug() << "Add cell to " << row << col;
-#endif
         }
         rsp->packContent();
         prevUTF8Infinitive = utf8Infinitive;
         prevTemplateName = d.templateName;
     }
+    /* Enable the button again */
+    btnLookup->setEnabled(true);
+    btnLookup->setText("");
+    resultPages->setUpdatesEnabled(true);
 }
 
 ResultPage* MainWindow::addResultPage(const std::string &labelText)
@@ -212,15 +210,19 @@ ResultPage* MainWindow::addResultPage(const std::string &labelText)
 
 void MainWindow::clearResults()
 {
-    wordinput->clear();
-    labVerb->clear();
-
     while (resultPages->count()) {
         int lastIndex = resultPages->count() - 1;
         resultPages->widget(lastIndex)->deleteLater();
         resultPages->removeTab(lastIndex);
     }
+}
+
+void MainWindow::startAgain()
+{
+    wordinput->clear();
+    clearResults();
     wordinput->setFocus();
+    btnLookup->setEnabled(true);
 }
 
 QVBoxLayout* MainWindow::makeResultCell(const VVS &tenseIterator,
@@ -228,19 +230,22 @@ QVBoxLayout* MainWindow::makeResultCell(const VVS &tenseIterator,
                                         const std::string &inputWord,
                                         FrenchVerbDictionary *verbDict)
 {
+    /* Mode & Tense name */
     QLabel *tenseLabel = new QLabel();
     tenseLabel->setText(QString::fromUtf8(tenseName.c_str()));
+    tenseLabel->setStyleSheet("QLabel {background-color: #44A51C; "
+                              "padding-left: 10px; padding-right: 10px}");
+
+    /* Conjugaison */
     QVBoxLayout *vbox = new QVBoxLayout();
     vbox->addWidget(tenseLabel);
-    std::string conjugated = createTableCellText(
-                                    *verbDict,
-                                    tenseIterator,
-                                    inputWord,
-                                    "",
-                                    "");
-    QLabel *conjResult = new QLabel();
-    conjResult->setText(QString::fromUtf8(conjugated.c_str()));
-    vbox->addWidget(conjResult);
+    QVector<QString> persons = qgetConjugates(*verbDict, tenseIterator,inputWord,
+                                              "<font color='#D20020'>", "</font>");
+    for (int i = 0; i < persons.size(); ++i) {
+        QLabel *lb = new QLabel(persons.at(i));
+        lb->setMargin(4);
+        vbox->addWidget(lb, 1);
+    }
     return vbox;
 }
 
