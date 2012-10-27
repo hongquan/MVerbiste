@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
     ui->setupUi(this);
     setupcodedUI();
+    initverbiste();
 }
 
 void MainWindow::setupcodedUI()
@@ -109,6 +110,31 @@ void MainWindow::showExpanded()
 
 void MainWindow::startLookup()
 {
-    QString text = wordinput->text();
-    labVerb->setText(text);
+    const std::set<std::string> *templateSet = NULL;
+    QString input = wordinput->text();
+    labVerb->setText(input);
+    FrenchVerbDictionary::Language lang = FrenchVerbDictionary::parseLanguageCode(langCode);
+    if (lang != FrenchVerbDictionary::FRENCH)
+    {
+        //wordinput->setText(QString("Fr"));
+    }
+    /*
+    std::string conjFileName, verbsFileName;
+    FrenchVerbDictionary::getXMLFilenames(conjFileName, verbsFileName, lang);
+    */
+    freVerbDic = new FrenchVerbDictionary(false);
+    const std::string word = input.toUtf8().constData();
+    templateSet = &freVerbDic->getVerbTemplateSet(word);
+    for (std::set<std::string>::const_iterator it = templateSet->begin();
+         it != templateSet->end(); ++it)
+       {
+           const std::string &tname = *it;
+
+           FrenchVerbDictionary::getRadical(word, tname);
+       }
+}
+
+void  MainWindow::initverbiste()
+{
+    langCode = "fr";
 }

@@ -123,4 +123,5 @@ export (TARGET.EPOCHEAPSIZE)
 export (TARGET.CAPABILITY)
 export (LIBS)
 export (QMAKE_EXTRA_TARGETS)
+export (installPrefix)
 }

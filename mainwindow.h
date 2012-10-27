@@ -9,6 +9,13 @@
 #include <QtGui/QScrollArea>
 #include <QtGui/QLabel>
 
+/* Verbiste */
+#include <iostream>
+#include <vector>
+#include <string.h>
+#include <verbiste/FrenchVerbDictionary.h>
+using namespace verbiste;
+
 namespace Ui {
     class MainWindow;
 }
@@ -33,6 +40,7 @@ public:
     void setOrientation(ScreenOrientation orientation);
 
     void showExpanded();
+    void initverbiste();
 
 public slots:
     void startLookup();
@@ -46,6 +54,8 @@ private:
     QLineEdit   *wordinput;          //  Word input
     QPushButton *btnLookup;          // Lookup button
     QLabel      *labVerb;
+    std::string langCode;
+    FrenchVerbDictionary *freVerbDic;
 };
 
 #endif // MAINWINDOW_H

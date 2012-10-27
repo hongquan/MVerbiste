@@ -2,7 +2,8 @@
 # by adapting the examples below.
 # file1.source = myfile
 # dir1.source = mydir
-DEPLOYMENTFOLDERS = # file1 dir1
+DEPLOYMENTFOLDERS = xmldata # file1 dir1
+xmldata.source = data
 
 symbian:TARGET.UID3 = 0xE214283E
 
@@ -26,12 +27,14 @@ SOURCES += main.cpp mainwindow.cpp \
     verbiste/Trie.cpp \
     verbiste/misc-types.cpp \
     verbiste/FrenchVerbDictionary.cpp \
-    verbiste/c-api.cpp
+    verbiste/c-api.cpp \
+    gui/conjugation.cpp
 HEADERS += mainwindow.h \
     verbiste/Trie.h \
     verbiste/misc-types.h \
     verbiste/FrenchVerbDictionary.h \
-    verbiste/c-api.h
+    verbiste/c-api.h \
+    gui/conjugation.h
 FORMS += mainwindow.ui
 
 # Please do not modify the following two lines. Required for deployment.
@@ -55,15 +58,13 @@ OTHER_FILES += \
     verbiste/verbiste.dox \
     verbiste/Makefile.in \
     verbiste/Makefile.am \
-    data/verbs-it.xml \
-    data/verbs-fr.xml \
-    data/verbs-el.xml \
-    data/conjugation-it.xml \
-    data/conjugation-fr.xml \
-    data/conjugation-el.xml \
-    data/check-data.pl
+    gui/Makefile.in \
+    gui/Makefile.am
 
 # To build verbiste
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libxml-2.0
-QMAKE_CXXFLAGS += -DLIBDATADIR=\\\"data\\\" -DICONV_CONST= -DVERBSFRXML=\\\"data/verbs-fr.xml\\\"
+
+DEFINES += ICONV_CONST=
+# installPrefix must be explicitly exported from deployment.pri first
+DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
