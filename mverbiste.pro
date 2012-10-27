@@ -68,3 +68,7 @@ unix: PKGCONFIG += libxml-2.0
 DEFINES += ICONV_CONST=
 # installPrefix must be explicitly exported from deployment.pri first
 DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
+
+CONFIG(debug) {
+    DEFINES += DEBUG
+}

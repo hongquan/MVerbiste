@@ -27,10 +27,14 @@ class ResultPage
 {
 public:
     QScrollArea *page;
-    QTableWidget *table;
+    QGridLayout *grid;
 
     ResultPage();
     // No destructor because this object does not own the two widgets.
+    void packContent();
+
+private:
+    QWidget *immediate;
 };
 
 class MainWindow : public QMainWindow
@@ -54,6 +58,10 @@ public:
 
     void showExpanded();
     void initverbiste();
+    QVBoxLayout* makeResultCell(const VVS &tenseIterator,
+                                     const std::string &tenseName,
+                                     const std::string &inputWord,
+                                     FrenchVerbDictionary *verbDict);
 
 public slots:
     void startLookup();

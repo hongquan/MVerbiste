@@ -3,7 +3,9 @@
 #include "gui/conjugation.h"
 
 #include <QtCore/QCoreApplication>
+#ifdef DEBUG
 #include <QDebug>
+#endif
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -52,6 +54,7 @@ void MainWindow::setupcodedUI()
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete freVerbDic;
 }
 
 void MainWindow::setOrientation(ScreenOrientation orientation)
@@ -179,15 +182,21 @@ void MainWindow::startLookup()
 
             int row = i / 4;
             int col = i % 4;
-            qDebug() << row << col;
 
             std::string utf8TenseName = getTenseNameForTableCell(row, col, isItalian);
             if (utf8TenseName.empty())
                 continue;
 
+#ifdef DEBUG
             qDebug() << utf8TenseName.c_str();
+#endif
+            QVBoxLayout *cell = makeResultCell(*t, utf8TenseName, word, freVerbDic);
+            rsp->grid->addLayout(cell, row, col);
+#ifdef DEBUG
+            qDebug() << "Add cell to " << row << col;
+#endif
         }
-
+        rsp->packContent();
         prevUTF8Infinitive = utf8Infinitive;
         prevTemplateName = d.templateName;
     }
@@ -214,11 +223,38 @@ void MainWindow::clearResults()
     wordinput->setFocus();
 }
 
+QVBoxLayout* MainWindow::makeResultCell(const VVS &tenseIterator,
+                                        const std::string &tenseName,
+                                        const std::string &inputWord,
+                                        FrenchVerbDictionary *verbDict)
+{
+    QLabel *tenseLabel = new QLabel();
+    tenseLabel->setText(QString::fromUtf8(tenseName.c_str()));
+    QVBoxLayout *vbox = new QVBoxLayout();
+    vbox->addWidget(tenseLabel);
+    std::string conjugated = createTableCellText(
+                                    *verbDict,
+                                    tenseIterator,
+                                    inputWord,
+                                    "",
+                                    "");
+    QLabel *conjResult = new QLabel();
+    conjResult->setText(QString::fromUtf8(conjugated.c_str()));
+    vbox->addWidget(conjResult);
+    return vbox;
+}
+
 /**** For ResultPage class ****/
 ResultPage::ResultPage()
     : page(new QScrollArea),
-      table(new QTableWidget)
+      grid(new QGridLayout)
 {
 }
 
+void ResultPage::packContent()
+{
+    QWidget *immediate = new QWidget();
+    immediate->setLayout(grid);
+    page->setWidget(immediate);
+}
 
