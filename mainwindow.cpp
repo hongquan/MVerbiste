@@ -112,6 +112,15 @@ void MainWindow::showExpanded()
 void  MainWindow::initverbiste()
 {
     langCode = "fr";
+
+    FrenchVerbDictionary::Language lang = FrenchVerbDictionary::parseLanguageCode(langCode);
+    if (lang != FrenchVerbDictionary::FRENCH)
+    {
+        // TODO: If lang code is not supported?
+    }
+
+    /* Create verb dictionary, accept non-accent input */
+    freVerbDic = new FrenchVerbDictionary(true);
 }
 
 void MainWindow::startLookup()
@@ -122,15 +131,6 @@ void MainWindow::startLookup()
     /* Pending the lookup job to the next event loop (redraw the button right now) */
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     QString input = wordinput->text();
-
-    FrenchVerbDictionary::Language lang = FrenchVerbDictionary::parseLanguageCode(langCode);
-    if (lang != FrenchVerbDictionary::FRENCH)
-    {
-        // TODO: If lang code is not supported?
-    }
-
-    /* Create verb dictionary, accept non-accent input */
-    freVerbDic = new FrenchVerbDictionary(true);
 
     /* Get input word to look up */
     const std::string word = input.toLower().toUtf8().constData();
