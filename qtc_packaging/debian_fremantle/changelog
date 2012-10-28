@@ -1,5 +1,4 @@
-mverbiste (0.0.1) unstable; urgency=low
+mverbiste (1.0.0) unstable; urgency=low
+   * Initial Release.
 
-  * Initial Release.
-
- -- Nguyễn Hồng Quân <ng.hong.quan@gmail.com>  Wed, 24 Oct 2012 22:43:33 +0700
+ -- Nguyễn Hồng Quân <ng.hong.quan@gmail.com>  Sun, 28 Oct 2012 17:08:52 +0700

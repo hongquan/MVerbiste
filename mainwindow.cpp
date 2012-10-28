@@ -122,12 +122,16 @@ void  MainWindow::initverbiste()
 
 void MainWindow::startLookup()
 {
+    QString input = wordinput->text().trimmed();
+    if (input.isEmpty()) {
+        return;
+    }
+
     btnLookup->setText(tr("Please wait..."));
     btnLookup->setEnabled(false);
     clearResults();
     /* Pending the lookup job to the next event loop (redraw the button right now) */
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-    QString input = wordinput->text();
 
     /* Get input word to look up */
     const std::string word = input.toLower().toUtf8().constData();
@@ -143,11 +147,29 @@ void MainWindow::startLookup()
     freVerbDic->deconjugate(word, infles);
 
     resultPages->setUpdatesEnabled(false);
-    std::string prevUTF8Infinitive, prevTemplateName;
+    std::string prevUTF8Infinitive, prevTemplateName; /* Remember found word
+    to avoid conjugating again */
+
     for (std::vector<InflectionDesc>::const_iterator it = infles.begin();
          it != infles.end(); it++)
     {
         const InflectionDesc &d = *it;
+
+#ifndef QT_NO_DEBUG
+        qDebug() << ">> Infinitive " << d.infinitive.c_str();
+        qDebug() << "   Template " << d.templateName.c_str();
+#endif
+        /* If this infinitive has been conjugated, we skip to the next infinitive */
+        if (d.infinitive == prevUTF8Infinitive && d.templateName == prevTemplateName) {
+            continue;
+        }
+        /* FIXME:
+         * In original source (Verbiste), this checking is done later,
+         * after getConjugation(). I place it here to avoid calling again
+         * multitimes getConjugation(), which is very slow.
+         * We need to test more to see which place is more correct.
+         */
+
         VVVS conjug;
         getConjugation(freVerbDic, d.infinitive, d.templateName, conjug, includePronouns);
 
@@ -160,11 +182,13 @@ void MainWindow::startLookup()
         }
 
         std::string utf8Infinitive = conjug[0][0][0];
-        if (utf8Infinitive == prevUTF8Infinitive && d.templateName == prevTemplateName)
-            // This result is duplicated
-            continue;
+#ifndef QT_NO_DEBUG
+        qDebug() << "   getConjugation() returns:";
+        qDebug() << "     Infinitive " << utf8Infinitive.c_str() << " at " << timer.elapsed();
+        qDebug() << "     Template " << d.templateName.c_str();
+#endif
 
-        /* Show on GUI */
+        /* Add result to GUI (not show yet) */
         ResultPage *rsp = addResultPage(utf8Infinitive);
 
         /* Get modes and tenses of the verb */
@@ -187,6 +211,7 @@ void MainWindow::startLookup()
             QVBoxLayout *cell = makeResultCell(*t, utf8TenseName, word, freVerbDic);
             rsp->grid->addLayout(cell, row, col);
         }
+        /* Show the result on GUI */
         rsp->packContent();
         prevUTF8Infinitive = utf8Infinitive;
         prevTemplateName = d.templateName;

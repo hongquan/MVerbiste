@@ -19,6 +19,7 @@
 
 #ifndef QT_NO_DEBUG
 #include <QDebug>
+#include <QElapsedTimer>
 #endif
 
 using namespace verbiste;
@@ -84,6 +85,9 @@ private:
     FrenchVerbDictionary *freVerbDic;
 
     ResultPage* addResultPage(const std::string &labelText);
+#ifndef QT_NO_DEBUG
+    QElapsedTimer timer;
+#endif
 
 private slots:
     void clearResults();
