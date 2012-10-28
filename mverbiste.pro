@@ -66,5 +66,12 @@ unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libxml-2.0
 
 DEFINES += ICONV_CONST=
-# installPrefix must be explicitly exported from deployment.pri first
-DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
+
+CONFIG(simulator) {    # Build to run on simulator. This needs the
+    # argument CONFIG+=simulator in the config of "Qt Simulator" target.
+    DEFINES += LIBDATADIR=\\\"$$PWD/data\\\"
+}
+else {
+    # installPrefix must be explicitly exported from deployment.pri first
+    DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
+}
