@@ -16,6 +16,11 @@
 #include <string.h>
 #include <verbiste/FrenchVerbDictionary.h>
 #include "gui/conjugation.h"
+
+#ifndef QT_NO_DEBUG
+#include <QDebug>
+#endif
+
 using namespace verbiste;
 
 namespace Ui {

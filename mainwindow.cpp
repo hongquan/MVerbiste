@@ -3,9 +3,6 @@
 #include "gui/conjugation.h"
 
 #include <QtCore/QCoreApplication>
-#ifdef DEBUG
-#include <QDebug>
-#endif
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
