@@ -38,8 +38,14 @@ getConjugation(const FrenchVerbDictionary &fvd,
                         const string &infinitive,
                         const string &tname,
                         VVVS &dest,
+               #ifndef QT_NO_DEBUG
+               QElapsedTimer &timer,
+               #endif
                         bool includePronouns)
 {
+#ifndef QT_NO_DEBUG
+        qDebug() << " *>> Inside getConjugation " << timer.elapsed();
+#endif
     const TemplateSpec *templ = fvd.getTemplate(tname);
     if (templ == NULL)
         return;

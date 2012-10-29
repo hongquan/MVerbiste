@@ -27,14 +27,17 @@
 
 #include <vector>
 #include <string>
-#include <QVector>
-#include <QString>
+#include <QtCore/QVector>
+#include <QtCore/QString>
 
 typedef std::vector<std::string> VS;
 typedef std::vector<VS> VVS;
 typedef std::vector<VVS> VVVS;
 
-
+#ifndef QT_NO_DEBUG
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QDebug>
+#endif
 
 /** Obtains the conjugation of the given infinitive.
     @param  fvd             verb dictionary from which to obtain
@@ -50,6 +53,9 @@ void getConjugation(const verbiste::FrenchVerbDictionary &fvd,
                         const std::string &infinitive,
                         const std::string &tname,
                         VVVS &dest,
+                    #ifndef QT_NO_DEBUG
+                        QElapsedTimer &timer,
+                    #endif
                         bool includePronouns = false);
 
 

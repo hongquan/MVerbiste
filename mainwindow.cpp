@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
     ui->setupUi(this);
     setupcodedUI();
-    initverbiste();
 }
 
 void MainWindow::setupcodedUI()
@@ -104,6 +103,7 @@ void MainWindow::showExpanded()
     show();
 #endif
     wordinput->setFocus();
+    initverbiste();
 }
 
 void  MainWindow::initverbiste()
@@ -144,6 +144,10 @@ void MainWindow::startLookup()
     bool includePronouns = FALSE;    // TODO: Will get this value from external
     bool isItalian = FALSE;          // TODO: Will get this value from external
 
+#ifndef QT_NO_DEBUG
+    timer.start();
+    qDebug() << "Start " << timer.elapsed();
+#endif
     freVerbDic->deconjugate(word, infles);
 
     resultPages->setUpdatesEnabled(false);
@@ -171,7 +175,18 @@ void MainWindow::startLookup()
          */
 
         VVVS conjug;
-        getConjugation(freVerbDic, d.infinitive, d.templateName, conjug, includePronouns);
+#ifndef QT_NO_DEBUG
+        qDebug() << "   START getConjugation " << timer.elapsed();
+#endif
+        getConjugation(freVerbDic, d.infinitive, d.templateName, conjug,
+               #ifndef QT_NO_DEBUG
+                       timer,
+               #endif
+                       includePronouns);
+
+#ifndef QT_NO_DEBUG
+        qDebug() << "   getConjugation() returns: " << timer.elapsed();
+#endif
 
         if (conjug.size() == 0           // if no tenses
             || conjug[0].size() == 0     // if no infinitive tense
@@ -183,8 +198,7 @@ void MainWindow::startLookup()
 
         std::string utf8Infinitive = conjug[0][0][0];
 #ifndef QT_NO_DEBUG
-        qDebug() << "   getConjugation() returns:";
-        qDebug() << "     Infinitive " << utf8Infinitive.c_str() << " at " << timer.elapsed();
+        qDebug() << "     Infinitive " << utf8Infinitive.c_str();
         qDebug() << "     Template " << d.templateName.c_str();
 #endif
 
@@ -211,11 +225,13 @@ void MainWindow::startLookup()
             QVBoxLayout *cell = makeResultCell(*t, utf8TenseName, word, freVerbDic);
             rsp->grid->addLayout(cell, row, col);
         }
+
         /* Show the result on GUI */
         rsp->packContent();
         prevUTF8Infinitive = utf8Infinitive;
         prevTemplateName = d.templateName;
     }
+
     /* Enable the button again */
     btnLookup->setEnabled(true);
     btnLookup->setText("");

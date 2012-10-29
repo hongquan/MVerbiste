@@ -67,8 +67,11 @@ unix: PKGCONFIG += libxml-2.0
 
 DEFINES += ICONV_CONST=
 
-CONFIG(simulator) {    # Build to run on simulator. This needs the
-    # argument CONFIG+=simulator in the config of "Qt Simulator" target.
+simulator {
+    DEFINES += LIBDATADIR=\\\"$$PWD/data\\\"
+}
+
+simulator {    # Build to run on simulator.
     DEFINES += LIBDATADIR=\\\"$$PWD/data\\\"
 }
 else {

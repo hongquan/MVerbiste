@@ -18,8 +18,8 @@
 #include "gui/conjugation.h"
 
 #ifndef QT_NO_DEBUG
-#include <QDebug>
-#include <QElapsedTimer>
+#include <QtCore/QDebug>
+#include <QtCore/QElapsedTimer>
 #endif
 
 using namespace verbiste;
