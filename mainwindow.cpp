@@ -102,8 +102,8 @@ void MainWindow::showExpanded()
 #else
     show();
 #endif
-    wordinput->setFocus();
     initverbiste();
+    wordinput->setFocus();
 }
 
 void  MainWindow::initverbiste()
