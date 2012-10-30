@@ -49,7 +49,7 @@ void MainWindow::setupcodedUI()
     setWindowIcon(*icon);
 
     /* About Dialog */
-    aboutDialog = new AboutDialog(ICONFILE, "MVerbiste");
+    aboutDialog = new AboutDialog(ICONFILE, QString("MVerbiste v%1").arg(VERSTR));
     aboutDialog->setIntro(trUtf8("A French conjugation utility for Maemo and MeeGo"));
     aboutDialog->addAuthor(QString::fromUtf8("Nguyễn Hồng Quân <ng.hong.quan@gmail.com>\nPierre Sarrazin <sarrazip@sarrazip.com>"));
 

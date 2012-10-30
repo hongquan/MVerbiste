@@ -62,13 +62,13 @@ OTHER_FILES += \
     verbiste/Makefile.in \
     verbiste/Makefile.am \
     gui/Makefile.in \
-    gui/Makefile.am \
-    icons/mverbiste.svg \
-    icons/mverbiste160.png
+    gui/Makefile.am
 
 # To build verbiste
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libxml-2.0
+
+DEFINES += VERSTR=\\\"1.0\\\"
 
 # For verbiste
 DEFINES += ICONV_CONST=
