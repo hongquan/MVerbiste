@@ -9,6 +9,7 @@
 #include <QtGui/QScrollArea>
 #include <QtGui/QLabel>
 #include <QtGui/QTableWidget>
+#include <QtGui/QMessageBox>
 
 /* Verbiste */
 #include <iostream>
@@ -16,6 +17,7 @@
 #include <string.h>
 #include <verbiste/FrenchVerbDictionary.h>
 #include "gui/conjugation.h"
+#include "about.h"
 
 #ifndef QT_NO_DEBUG
 #include <QtCore/QDebug>
@@ -65,9 +67,9 @@ public:
     void showExpanded();
     void initverbiste();
     QVBoxLayout* makeResultCell(const VVS &tenseIterator,
-                                     const std::string &tenseName,
-                                     const std::string &inputWord,
-                                     FrenchVerbDictionary *verbDict);
+                                const std::string &tenseName,
+                                const std::string &inputWord,
+                                FrenchVerbDictionary *verbDict);
 
 public slots:
     void startLookup();
@@ -81,8 +83,10 @@ private:
     QPushButton *btnClear;           // Clear button
     QLineEdit   *wordinput;          //  Word input
     QPushButton *btnLookup;          // Lookup button
+    QMessageBox *msgbox;
     std::string langCode;
     FrenchVerbDictionary *freVerbDic;
+    AboutDialog *aboutDialog;
 
     ResultPage* addResultPage(const std::string &labelText);
 #ifndef QT_NO_DEBUG

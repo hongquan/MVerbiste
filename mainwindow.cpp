@@ -42,12 +42,28 @@ void MainWindow::setupcodedUI()
 
     connect(wordinput, SIGNAL(returnPressed()), this, SLOT(startLookup()));
     connect(btnLookup, SIGNAL(clicked()), this, SLOT(startLookup()));
+
+    /* Icon */
+    QIcon *icon = new QIcon();
+    icon->addFile(ICONFILE);
+    setWindowIcon(*icon);
+
+    /* About Dialog */
+    aboutDialog = new AboutDialog(ICONFILE, "MVerbiste");
+    aboutDialog->setIntro(trUtf8("A French conjugation utility for Maemo and MeeGo"));
+    aboutDialog->addAuthor(QString::fromUtf8("Nguyễn Hồng Quân <ng.hong.quan@gmail.com>\nPierre Sarrazin <sarrazip@sarrazip.com>"));
+
+    /* Menu */
+    QMenu *menu = ui->menuBar->addMenu(tr("Top menu"));
+    QAction *act_about = menu->addAction(tr("About"));
+    connect(act_about, SIGNAL(triggered()), aboutDialog, SLOT(show()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete freVerbDic;
+    delete aboutDialog;
 }
 
 void MainWindow::setOrientation(ScreenOrientation orientation)

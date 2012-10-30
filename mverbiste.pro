@@ -2,8 +2,9 @@
 # by adapting the examples below.
 # file1.source = myfile
 # dir1.source = mydir
-DEPLOYMENTFOLDERS = xmldata # file1 dir1
+DEPLOYMENTFOLDERS = xmldata icon # file1 dir1
 xmldata.source = data
+icon.source = icons
 
 symbian:TARGET.UID3 = 0xE214283E
 
@@ -28,13 +29,15 @@ SOURCES += main.cpp mainwindow.cpp \
     verbiste/misc-types.cpp \
     verbiste/FrenchVerbDictionary.cpp \
     verbiste/c-api.cpp \
-    gui/conjugation.cpp
+    gui/conjugation.cpp \
+    about.cpp
 HEADERS += mainwindow.h \
     verbiste/Trie.h \
     verbiste/misc-types.h \
     verbiste/FrenchVerbDictionary.h \
     verbiste/c-api.h \
-    gui/conjugation.h
+    gui/conjugation.h \
+    about.h
 FORMS += mainwindow.ui
 
 # Please do not modify the following two lines. Required for deployment.
@@ -59,22 +62,23 @@ OTHER_FILES += \
     verbiste/Makefile.in \
     verbiste/Makefile.am \
     gui/Makefile.in \
-    gui/Makefile.am
+    gui/Makefile.am \
+    icons/mverbiste.svg \
+    icons/mverbiste160.png
 
 # To build verbiste
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libxml-2.0
 
+# For verbiste
 DEFINES += ICONV_CONST=
-
-simulator {
-    DEFINES += LIBDATADIR=\\\"$$PWD/data\\\"
-}
 
 simulator {    # Build to run on simulator.
     DEFINES += LIBDATADIR=\\\"$$PWD/data\\\"
+    DEFINES +=ICONFILE=\\\"$$PWD/icons/mverbiste160.png\\\"
 }
 else {
     # installPrefix must be explicitly exported from deployment.pri first
     DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
+    DEFINES +=ICONFILE=\\\"$${installPrefix}/icons/mverbiste160.png\\\"
 }
