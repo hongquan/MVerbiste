@@ -57,12 +57,7 @@ OTHER_FILES += \
     qtc_packaging/debian_fremantle/copyright \
     qtc_packaging/debian_fremantle/control \
     qtc_packaging/debian_fremantle/compat \
-    qtc_packaging/debian_fremantle/changelog \
-    verbiste/verbiste.dox \
-    verbiste/Makefile.in \
-    verbiste/Makefile.am \
-    gui/Makefile.in \
-    gui/Makefile.am
+    qtc_packaging/debian_fremantle/changelog
 
 # To build verbiste
 unix: CONFIG += link_pkgconfig

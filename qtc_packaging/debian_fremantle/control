@@ -2,12 +2,12 @@ Source: mverbiste
 Section: user/education
 Priority: optional
 Maintainer: Nguyễn Hồng Quân <ng.hong.quan@gmail.com>
-Build-Depends: debhelper (>= 5), libqt4-dev
+Build-Depends: debhelper (>= 5), libqt4-dev, libxml2-dev
 Standards-Version: 3.7.3
 Homepage: https://gitorious.org/mverbiste
 
 Package: mverbiste
-Architecture: any
+Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: MVerbiste is to help conjugation French verbs.
  MVerbiste is an effort to bring Verbiste, a program to help conjugate French verbs, to Maemo & MeeGo.
