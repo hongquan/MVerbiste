@@ -288,7 +288,9 @@ QVBoxLayout* MainWindow::makeResultCell(const VVS &tenseIterator,
     /* Mode & Tense name */
     QLabel *tenseLabel = new QLabel();
     tenseLabel->setText(QString::fromUtf8(tenseName.c_str()));
-    tenseLabel->setStyleSheet("QLabel {background-color: #44A51C; "
+    tenseLabel->setStyleSheet("QLabel {background-color: #44A51C;"
+                              "border-top-left-radius: 4px;"
+                              "border-top-right-radius: 4px;"
                               "padding-left: 10px; padding-right: 10px}");
 
     /* Conjugaison */
