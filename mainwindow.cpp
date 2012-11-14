@@ -194,7 +194,7 @@ void MainWindow::startLookup()
 #ifndef QT_NO_DEBUG
         qDebug() << "   START getConjugation " << timer.elapsed();
 #endif
-        getConjugation(freVerbDic, d.infinitive, d.templateName, conjug,
+        getConjugation(*freVerbDic, d.infinitive, d.templateName, conjug,
                #ifndef QT_NO_DEBUG
                        timer,
                #endif
