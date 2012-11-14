@@ -1,4 +1,11 @@
-mverbiste (1.0.0) unstable; urgency=low
+mverbiste (1.1.0) stable; urgency=low
+   * Support Italian verbs.
+   * Show pronouns.
+
+ -- Nguyễn Hồng Quân <ng.hong.quan@gmail.com>  Wed, 14 Nov 2012 17:08:52 +0700
+
+mverbiste (1.0.0) stable; urgency=low
    * Initial Release.
 
  -- Nguyễn Hồng Quân <ng.hong.quan@gmail.com>  Sun, 28 Oct 2012 17:08:52 +0700
+

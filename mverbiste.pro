@@ -63,7 +63,7 @@ OTHER_FILES += \
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libxml-2.0
 
-DEFINES += VERSTR=\\\"1.0\\\"
+DEFINES += VERSTR=\\\"1.1\\\"
 
 # For verbiste
 DEFINES += ICONV_CONST=
@@ -76,8 +76,4 @@ else {
     # installPrefix must be explicitly exported from deployment.pri first
     DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
     DEFINES +=ICONFILE=\\\"$${installPrefix}/icons/mverbiste160.png\\\"
-}
-
-maemo5 {
-    QT += maemo5
 }

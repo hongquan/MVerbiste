@@ -13,10 +13,6 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QActionGroup>
 
-#if defined(Q_WS_MAEMO_5)
-#include <QtMaemo5>
-#endif
-
 /* Verbiste */
 #include <iostream>
 #include <vector>
