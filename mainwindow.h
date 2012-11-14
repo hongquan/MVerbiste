@@ -4,12 +4,18 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QTextEdit>
 #include <QtGui/QPushButton>
+#include <QtGui/QCheckBox>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QLineEdit>
 #include <QtGui/QScrollArea>
 #include <QtGui/QLabel>
 #include <QtGui/QTableWidget>
 #include <QtGui/QMessageBox>
+#include <QtGui/QActionGroup>
+
+#if defined(Q_WS_MAEMO_5)
+#include <QtMaemo5>
+#endif
 
 /* Verbiste */
 #include <iostream>
@@ -73,6 +79,7 @@ public:
 
 public slots:
     void startLookup();
+    void switchLang();
 
 private:
     Ui::MainWindow *ui;
@@ -81,8 +88,11 @@ private:
     QTabWidget  *resultPages;
     QHBoxLayout *btlayout;           // Layout to pack the functional buttons
     QPushButton *btnClear;           // Clear button
+    QCheckBox   *btnPron;
     QLineEdit   *wordinput;          //  Word input
     QPushButton *btnLookup;          // Lookup button
+    QAction     *filFrench;
+    QAction     *filItalian;
     QMessageBox *msgbox;
     std::string langCode;
     FrenchVerbDictionary *freVerbDic;

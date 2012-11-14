@@ -77,3 +77,7 @@ else {
     DEFINES += LIBDATADIR=\\\"$${installPrefix}/data\\\"
     DEFINES +=ICONFILE=\\\"$${installPrefix}/icons/mverbiste160.png\\\"
 }
+
+maemo5 {
+    QT += maemo5
+}

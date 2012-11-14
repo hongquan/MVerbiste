@@ -22,15 +22,18 @@ void MainWindow::setupcodedUI()
     btlayout = new QHBoxLayout;
 
     resultPages = new QTabWidget;
-    resultPages->setTabPosition(QTabWidget::West);
+    resultPages->setStyleSheet("QTabBar::tab { height: 50px }");
     mlayout->addWidget(resultPages);
 
-    btnClear = new QPushButton;
+    btnPron = new QCheckBox();
+    btnPron->setIcon(QIcon("/usr/share/icons/hicolor/48x48/hildon/general_conference_avatar.png"));
+    btnClear = new QPushButton;   /* Clearbutton */
     btnClear->setIcon(QIcon("/usr/share/icons/hicolor/64x64/hildon/general_delete.png"));
-    wordinput = new QLineEdit;
+    wordinput = new QLineEdit;    /* Word input */
+    btlayout->addWidget(btnPron);
     btlayout->addWidget(btnClear);
     btlayout->addWidget(wordinput);
-    btnLookup = new QPushButton;  // Lookup button
+    btnLookup = new QPushButton;  /* Lookup button */
     btnLookup->setIcon(QIcon("/usr/share/icons/hicolor/64x64/hildon/general_search.png"));
     btlayout->addWidget(btnLookup);
 
@@ -42,6 +45,7 @@ void MainWindow::setupcodedUI()
 
     connect(wordinput, SIGNAL(returnPressed()), this, SLOT(startLookup()));
     connect(btnLookup, SIGNAL(clicked()), this, SLOT(startLookup()));
+    connect(btnPron, SIGNAL(clicked()), this, SLOT(startLookup()));
 
     /* Icon */
     QIcon *icon = new QIcon();
@@ -57,6 +61,17 @@ void MainWindow::setupcodedUI()
     QMenu *menu = ui->menuBar->addMenu(tr("Top menu"));
     QAction *act_about = menu->addAction(tr("About"));
     connect(act_about, SIGNAL(triggered()), aboutDialog, SLOT(show()));
+    /* Menu filters */
+    QActionGroup *filterGroup = new QActionGroup(this);
+    filterGroup->setExclusive(true);
+    filFrench = new QAction(tr("Search French"), filterGroup);
+    filFrench->setCheckable(true);
+    filFrench->setChecked(true);
+    filItalian = new QAction(tr("Search Italian"), filterGroup);
+    filItalian->setCheckable(true);
+    menu->addActions(filterGroup->actions());
+    connect(filItalian, SIGNAL(changed()), this, SLOT(switchLang()));
+    connect(filFrench, SIGNAL(changed()), this, SLOT(switchLang()));
 }
 
 MainWindow::~MainWindow()
@@ -136,6 +151,21 @@ void  MainWindow::initverbiste()
     freVerbDic = new FrenchVerbDictionary(true);
 }
 
+void MainWindow::switchLang()
+{
+    FrenchVerbDictionary::Language curlang = freVerbDic->getLanguage();
+    FrenchVerbDictionary::Language targetlang = filItalian->isChecked() ? FrenchVerbDictionary::ITALIAN
+                                                                        : FrenchVerbDictionary::FRENCH;
+    if (curlang == targetlang) {
+        return;
+    }
+    /* If lang change */
+    std::string conjFN, verbsFN;
+    FrenchVerbDictionary::getXMLFilenames(conjFN, verbsFN, targetlang);
+    delete freVerbDic;
+    freVerbDic = new FrenchVerbDictionary(conjFN, verbsFN, true, targetlang);
+}
+
 void MainWindow::startLookup()
 {
     QString input = wordinput->text().trimmed();
@@ -157,8 +187,8 @@ void MainWindow::startLookup()
      *  obtain its complete conjugation.
      */
     std::vector<InflectionDesc> infles;
-    bool includePronouns = FALSE;    // TODO: Will get this value from external
-    bool isItalian = FALSE;          // TODO: Will get this value from external
+    bool includePronouns = btnPron->isChecked();
+    bool isItalian = filItalian->isChecked();          // TODO: Will get this value from external
 
 #ifndef QT_NO_DEBUG
     timer.start();
