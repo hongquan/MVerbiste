@@ -190,10 +190,6 @@ void MainWindow::startLookup()
     bool includePronouns = btnPron->isChecked();
     bool isItalian = filItalian->isChecked();          // TODO: Will get this value from external
 
-#ifndef QT_NO_DEBUG
-    timer.start();
-    qDebug() << "Start " << timer.elapsed();
-#endif
     freVerbDic->deconjugate(word, infles);
 
     resultPages->setUpdatesEnabled(false);
@@ -205,34 +201,13 @@ void MainWindow::startLookup()
     {
         const InflectionDesc &d = *it;
 
-#ifndef QT_NO_DEBUG
-        qDebug() << ">> Infinitive " << d.infinitive.c_str();
-        qDebug() << "   Template " << d.templateName.c_str();
-#endif
         /* If this infinitive has been conjugated, we skip to the next infinitive */
         if (d.infinitive == prevUTF8Infinitive && d.templateName == prevTemplateName) {
             continue;
         }
-        /* FIXME:
-         * In original source (Verbiste), this checking is done later,
-         * after getConjugation(). I place it here to avoid calling again
-         * multitimes getConjugation(), which is very slow.
-         * We need to test more to see which place is more correct.
-         */
 
         VVVS conjug;
-#ifndef QT_NO_DEBUG
-        qDebug() << "   START getConjugation " << timer.elapsed();
-#endif
-        getConjugation(*freVerbDic, d.infinitive, d.templateName, conjug,
-               #ifndef QT_NO_DEBUG
-                       timer,
-               #endif
-                       includePronouns);
-
-#ifndef QT_NO_DEBUG
-        qDebug() << "   getConjugation() returns: " << timer.elapsed();
-#endif
+        getConjugation(*freVerbDic, d.infinitive, d.templateName, conjug, includePronouns);
 
         if (conjug.size() == 0           // if no tenses
             || conjug[0].size() == 0     // if no infinitive tense
@@ -243,10 +218,6 @@ void MainWindow::startLookup()
         }
 
         std::string utf8Infinitive = conjug[0][0][0];
-#ifndef QT_NO_DEBUG
-        qDebug() << "     Infinitive " << utf8Infinitive.c_str();
-        qDebug() << "     Template " << d.templateName.c_str();
-#endif
 
         /* Add result to GUI (not show yet) */
         ResultPage *rsp = addResultPage(utf8Infinitive);

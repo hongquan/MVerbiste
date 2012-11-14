@@ -35,17 +35,11 @@ using namespace verbiste;
 
 void
 getConjugation(const FrenchVerbDictionary &fvd,
-                        const string &infinitive,
-                        const string &tname,
-                        VVVS &dest,
-               #ifndef QT_NO_DEBUG
-               QElapsedTimer &timer,
-               #endif
-                        bool includePronouns)
+               const string &infinitive,
+               const string &tname,
+               VVVS &dest,
+               bool includePronouns)
 {
-#ifndef QT_NO_DEBUG
-        qDebug() << " *>> Inside getConjugation " << timer.elapsed();
-#endif
     const TemplateSpec *templ = fvd.getTemplate(tname);
     if (templ == NULL)
         return;

@@ -50,13 +50,10 @@ typedef std::vector<VVS> VVVS;
                             modes where pronouns are used
 */
 void getConjugation(const verbiste::FrenchVerbDictionary &fvd,
-                        const std::string &infinitive,
-                        const std::string &tname,
-                        VVVS &dest,
-                    #ifndef QT_NO_DEBUG
-                        QElapsedTimer &timer,
-                    #endif
-                        bool includePronouns = false);
+                    const std::string &infinitive,
+                    const std::string &tname,
+                    VVVS &dest,
+                    bool includePronouns = false);
 
 
 /** Get the tense name for a certain cell of the conjugation table.
